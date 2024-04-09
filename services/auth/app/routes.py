@@ -12,7 +12,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 router = APIRouter()
 
 
-@router.post("/access-refresh-token", response_model=JWTToken)
+@router.post("/access-token", response_model=JWTToken)
 async def login_access_refresh_token(credentials: OAuth2PasswordRequestForm = Depends()):
     credentials = CredentialsSchema(email=credentials.username, password=credentials.password)
     user = await authenticate(credentials=credentials)

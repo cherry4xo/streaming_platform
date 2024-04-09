@@ -9,3 +9,4 @@ tortoise-orm
 tortoise-orm[asyncpg]
 python-dotenv
 passlib
+python-multipart

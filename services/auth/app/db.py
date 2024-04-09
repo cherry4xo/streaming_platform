@@ -2,7 +2,6 @@ import os
 import uuid
 import logging
 
-from tortoise import Tortoise
 from tortoise.contrib.fastapi import register_tortoise
 from aerich import Command
 from fastapi import FastAPI
@@ -21,7 +20,7 @@ def get_tortoise_config() -> dict:
             "models": app_list,
             "default_connection": "default"
         }
-    }
+    }   
     return config
 
 TORTOISE_ORM = get_tortoise_config()
@@ -33,7 +32,7 @@ def register_db(app: FastAPI, db_url: str = None) -> None:
         app,
         db_url=db_url,
         modules={"models": app_list},
-        generate_schemas=True,
+        generate_schemas=False,
         add_exception_handlers=True
     )
 
@@ -47,9 +46,8 @@ async def upgrade_db(app: FastAPI, db_url: str = None):
 
 
 async def init(app: FastAPI):
-    await upgrade_db(app=app)
-
-    await Tortoise.generate_schemas()
+    # await upgrade_db(app)
+    register_db(app)
     logger.debug("Connected to db")
     await ping_redis_connection(r)
     logger.debug("Connected to redis")
