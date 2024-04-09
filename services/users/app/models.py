@@ -1,8 +1,12 @@
 from typing import Optional
+from datetime import date
 
 from tortoise import fields
 from tortoise.models import Model
 from tortoise.exceptions import DoesNotExist
+
+from app.schemas import UserCreate
+from app.utils import password
 
 
 class User(Model):
@@ -21,6 +25,14 @@ class User(Model):
             return user
         except DoesNotExist:
             return None
+        
+    @classmethod
+    async def create(cls, user: UserCreate) -> "User":
+        user_dict = user.model_dump(exclude=["password"])
+        password_hash = password.get_password_hash(password=user.password)
+        model = cls(**user_dict, password_hash=password_hash, registration_date=date.today())
+        await model.save()
+        return model
 
     async def to_dict(self):
         d = {}

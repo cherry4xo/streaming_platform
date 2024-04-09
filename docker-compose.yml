@@ -24,12 +24,29 @@ services:
     environment:
       POSTGRES_PASSWORD: 256128
       POSTGRES_USER: postgres
-      POSTGRES_DB: auth
+      POSTGRES_DB: users
     expose:
       - 5432
     volumes:
       - "postgres:/data/db"
+  # zookeeper:
+  #   image: "bitnami/zookeeper:3.7.0"
+  #   container_name: zookeeper
+  #   ports:
+  #     - "2181:2181"
+  #   environment:
+  #     - ALLOW_ANONYMOUS_LOGIN=yes
+  # kafka:
+  #   image: "bitnami/kafka:2.8.0"
+  #   container_name: kafka
+  #   ports:
+  #     - "9092:9092"
+  #   environment:
+  #     - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+  #     - ALLOW_PLAINTEXT_LISTENER=yes
+  #   depends_on:
+  #     - zookeeper
 
 volumes:
   redis:
-  postgres:
+  users-postgres:
