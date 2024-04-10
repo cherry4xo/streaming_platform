@@ -7,6 +7,10 @@ load_dotenv()
 API_HOST = os.getenv("API_HOST")
 API_PORT = os.getenv("API_PORT")
 
+BOOTSTRAP_SERVICE = os.getenv("BOOTSTRAP_SERVICE")
+PRODUCE_TOPIC = os.getenv("PRODUCE_TOPIC")
+CONSUME_TOPIC = os.getenv("CONSUME_TOPIC")
+
 REDIS_HOST = os.getenv("REDIS_HOST")
 REDIS_PORT = os.getenv("REDIS_PORT")
 
