@@ -28,7 +28,16 @@ services:
     expose:
       - 5432
     volumes:
-      - "postgres:/data/db"
+      - "users-postgres:/data/db"
+  users:
+    build: ./services/users
+    restart: unless-stopped
+    ports:
+      - "8083:8083"
+    links:
+      - redis
+      - users-postgres
+    command: python3 -u -m uvicorn main:app --host 0.0.0.0 --port 8083
   # zookeeper:
   #   image: "bitnami/zookeeper:3.7.0"
   #   container_name: zookeeper

@@ -11,3 +11,6 @@ tortoise-orm[asyncpg]
 python-dotenv
 passlib
 python-multipart
+email-validator
+bcrypt
+cryptography

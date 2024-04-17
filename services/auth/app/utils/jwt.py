@@ -22,7 +22,7 @@ def create_access_token(*, data: dict, expires_delta: timedelta = None):
     return encoded_jwt
 
 
-def create_refresh_token(* data: dict, expire_delta: timedelta = None):
+def create_refresh_token(*, data: dict, expire_delta: timedelta = None):
     to_encode = data.copy()
     if expire_delta:
         expire = datetime.now() + expire_delta

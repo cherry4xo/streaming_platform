@@ -2,6 +2,9 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
+CONSUME_TOPIC = os.getenv("CONSUME_TOPIC")
+PRODUCE_TOPIC = os.getenv("PRODUCER_TOPIC")
+
 API_HOST = os.getenv("API_HOST")
 API_PORT = os.getenv("API_PORT")
 

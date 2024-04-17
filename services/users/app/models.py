@@ -4,6 +4,7 @@ from datetime import date
 from tortoise import fields
 from tortoise.models import Model
 from tortoise.exceptions import DoesNotExist
+from pydantic import UUID4
 
 from app.schemas import UserCreate
 from app.utils import password
@@ -21,6 +22,15 @@ class User(Model):
     async def get_by_email(cls, email: str) -> Optional["User"]:
         try:
             query = cls.get_or_none(email=email)
+            user = await query
+            return user
+        except DoesNotExist:
+            return None
+        
+    @classmethod
+    async def get_by_uuid(cls, uuid: UUID4) -> Optional["User"]:
+        try:
+            query = cls.get_or_none(uuid=uuid)
             user = await query
             return user
         except DoesNotExist:

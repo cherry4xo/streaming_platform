@@ -30,6 +30,24 @@ async def get_current_user(token: str = Security(reusable_oauth2)) -> Optional[U
     return user
 
 
+async def validate_refresh_token(token: str = Security(reusable_oauth2)) -> Optional[User]:
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
+        token_data = JWTTokenPayload(**payload)
+        token_sub = payload["sub"]
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Could not validate credentials")
+
+    if token_sub != "refresh":
+        raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Could not validate credentials")
+    
+    user = await User.filter(uuid=token_data.user_uuid).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return user
+
+
 async def get_current_admin(current_user: User = Security(get_current_user)):
     if not current_user.is_admin:
         raise HTTPException(
