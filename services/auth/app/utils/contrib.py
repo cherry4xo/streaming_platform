@@ -4,6 +4,7 @@ from fastapi import HTTPException, Security
 from fastapi.security import OAuth2PasswordBearer
 
 from starlette.status import HTTP_403_FORBIDDEN
+from pydantic import ValidationError
 
 from app.models import User
 from app.schemas import JWTTokenPayload, CredentialsSchema
@@ -14,6 +15,9 @@ from app import settings
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=settings.LOGIN_URL,
+)
+refresh_oauth2 = OAuth2PasswordBearer(
+    tokenUrl=settings.LOGIN_URL
 )
 
 async def get_current_user(token: str = Security(reusable_oauth2)) -> Optional[User]:
@@ -30,15 +34,18 @@ async def get_current_user(token: str = Security(reusable_oauth2)) -> Optional[U
     return user
 
 
-async def validate_refresh_token(token: str = Security(reusable_oauth2)) -> Optional[User]:
+async def validate_refresh_token(token: str = Security(refresh_oauth2)) -> User | None:
+    credentials_exception = HTTPException(
+        status_code=401,
+        detail="Could not validate credentials",
+    )
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
         token_data = JWTTokenPayload(**payload)
-        token_sub = payload["sub"]
-    except jwt.PyJWTError:
-        raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Could not validate credentials")
-
-    if token_sub != "refresh":
+    except (jwt.PyJWTError, ValidationError):
         raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Could not validate credentials")
     
     user = await User.filter(uuid=token_data.user_uuid).first()
