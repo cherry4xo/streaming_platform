@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 
 from app.db import init_db
 from app import settings
-from app.routes import router as login_router
+from app.routes import router as users_router
 
 
 def init_middlewares(app: FastAPI):
@@ -31,7 +31,7 @@ async def lifespan_wrapper(app):
 app.router.lifespan_context = lifespan_wrapper
 
 init_middlewares(app)
-app.include_router(login_router, prefix="/login", tags=["login"])
+app.include_router(users_router, prefix="/users", tags=["login"])
 
 # if __name__ == "__main__":
 #     uvicorn.run(app, host=settings.API_HOST, port=int(settings.API_PORT))

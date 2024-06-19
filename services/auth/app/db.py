@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from app import settings
 from app.redis import r, ping_redis_connection
 
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def get_tortoise_config() -> dict:
@@ -17,8 +17,10 @@ def get_tortoise_config() -> dict:
     config = {
         "connections": settings.DB_CONNECTIONS,
         "apps": {
-            "models": app_list,
-            "default_connection": "default"
+            "models": {
+                "models": app_list,
+                "default_connection": "default"
+            }
         }
     }   
     return config
@@ -38,6 +40,7 @@ def register_db(app: FastAPI, db_url: str = None) -> None:
 
 async def upgrade_db(app: FastAPI, db_url: str = None):
     command = Command(tortoise_config=TORTOISE_ORM, app="models", location="./migrations")
+    print(TORTOISE_ORM)
     if not os.path.exists("./migrations/models"):
         await command.init_db(safe=True)
     await command.init()
@@ -46,7 +49,7 @@ async def upgrade_db(app: FastAPI, db_url: str = None):
 
 
 async def init(app: FastAPI):
-    # await upgrade_db(app)
+    await upgrade_db(app)
     register_db(app)
     logger.debug("Connected to db")
     await ping_redis_connection(r)

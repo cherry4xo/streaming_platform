@@ -16,10 +16,12 @@ def get_tortoise_config() -> dict:
     config = {
         "connections": settings.DB_CONNECTIONS,
         "apps": {
-            "models": app_list,
-            "default_connection": "default"
+            "models": {
+                "models": app_list,
+                "default_connection": "default"
+            }
         }
-    }
+    }  
     return config
 
 TORTOISE_ORM = get_tortoise_config()
@@ -45,6 +47,6 @@ async def upgrade_db() -> None:
 
 
 async def init_db(app: FastAPI) -> None:
-    # await upgrade_db()
+    await upgrade_db()
     register_db(app)
     logger.debug("Connected to db")

@@ -28,9 +28,10 @@ DB_CONNECTIONS = {
     }
 
 SECRET_KEY = os.getenv("SECRET_KEY", default="".join([random.choice(string.ascii_letters) for _ in range(32)]))
+CLIENT_ID = os.getenv("CLIENT_ID", default="".join([random.choice(string.ascii_letters) for _ in range(32)]))
 
-LOGIN_URL = API_HOST + "/api/auth/login/access-token"
-REFRESH_URL = API_HOST + "/api/auth/login/refresh-token"
+LOGIN_URL = "/login/access-token"
+REFRESH_URL = "/login/refresh-token"
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 15
 REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 14 # 2 weeks

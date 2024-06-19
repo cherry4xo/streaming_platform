@@ -1,0 +1,34 @@
+{
+    "$schema": "https://www.krakend.io/schema/v3.json",
+    "version": 3,
+    "name": "KrakenD API GW",
+    "port": 8080,
+    "host": ["http://0.0.0.0:8080"],
+    "timeout": "3000ms",
+    "cache_ttl": "300s",
+    "endpoints": [
+        {
+            "@comment": "Get user me",
+            "endpoint": "/me",
+            "method": "GET",
+            "input_headers": [
+                "Authorization"
+            ],
+            "backend": [
+                {
+                    "host": ["http://users:8083"],
+                    "url_pattern": "/users/me"
+                }
+            ],
+            "extra_config": {
+                "auth/signer": {
+                    "alg": "HS256",
+                    "jwk_url": "http://auth:8083/login/symmetric.json",
+                    "keys_to_sign": ["access_token", "refresh_token"],
+                    "kid": "sim2",
+                    "disable_jwk_security": true
+                }
+            }
+        }
+    ]
+}

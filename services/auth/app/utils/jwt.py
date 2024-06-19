@@ -22,10 +22,10 @@ def create_access_token(*, data: dict, expires_delta: timedelta = None):
     return encoded_jwt
 
 
-def create_refresh_token(*, data: dict, expire_delta: timedelta = None):
+def create_refresh_token(*, data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
-    if expire_delta:
-        expire = datetime.now() + expire_delta
+    if expires_delta:
+        expire = datetime.now() + expires_delta
     else:
         expire = datetime.now() + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire.timestamp(), "sub": refresh_token_jwt_subject})

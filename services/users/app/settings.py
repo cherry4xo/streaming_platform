@@ -1,9 +1,8 @@
+import random
+import string
 import os
 from dotenv import load_dotenv
 load_dotenv()
-
-CONSUME_TOPIC = os.getenv("CONSUME_TOPIC")
-PRODUCE_TOPIC = os.getenv("PRODUCER_TOPIC")
 
 API_HOST = os.getenv("API_HOST")
 API_PORT = os.getenv("API_PORT")
@@ -22,6 +21,11 @@ DB_URL = f"postgres://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 DB_CONNECTIONS = {
         "default": DB_URL,
     }
+
+SECRET_KEY = os.getenv("SECRET_KEY", default="".join([random.choice(string.ascii_letters) for _ in range(32)]))
+CLIENT_ID = os.getenv("CLIENT_ID", default="".join([random.choice(string.ascii_letters) for _ in range(32)]))
+
+LOGIN_URL = f"http://auth:8083/login/access-token"
 
 CORS_ORIGINS = ["*"]
 CORS_ALLOW_CREDENTIALS = True
