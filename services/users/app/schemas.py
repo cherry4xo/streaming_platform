@@ -1,6 +1,6 @@
 import uuid
 from typing import Optional
-from datetime import date
+from datetime import date, datetime
 
 from pydantic import BaseModel, validator, UUID4, EmailStr
 
@@ -36,3 +36,51 @@ class UserOut(BaseUser):
 class JWTTokenPayload(BaseModel):
     user_uuid: UUID4 = None
     token_kind: str = None
+
+
+class UserChangePasswordIn(BaseModel):
+    current_password: str
+    new_password: str
+
+
+class UserBaseSendConfirmCode(BaseProperties):
+    user_id: UUID4
+    email: EmailStr
+    time: datetime
+
+
+class UserBaseConfirmed(BaseProperties):
+    user_id: UUID4
+    email: EmailStr
+    is_comfirmed: bool
+
+
+class UserBaseConfirmCode(BaseModel):
+    code: str
+
+
+class UserBaseResetLetterIn(BaseModel):
+    email: EmailStr
+
+
+class UserBaseResetLetterSent(BaseModel):
+    email: EmailStr
+    time: datetime
+
+
+class UserBaseResetConfirm(BaseModel):
+    email: EmailStr
+    code: str
+
+
+class UserBaseResetConfirmed(BaseModel):
+    code: str
+
+
+class UserBaseResetPasswordIn(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class UserBaseResetPasswordOut(BaseModel):
+    user_id: UUID4

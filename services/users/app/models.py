@@ -17,6 +17,7 @@ class User(Model):
     password_hash = fields.CharField(max_length=255, null=True)
     registration_date = fields.DateField(auto_now_add=True)
     is_admin = fields.BooleanField(default=False)
+    is_confirmed = fields.BooleanField(default=False)
 
     @classmethod
     async def get_by_email(cls, email: str) -> Optional["User"]:

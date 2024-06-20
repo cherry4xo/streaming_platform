@@ -7,7 +7,7 @@ from aerich import Command
 from fastapi import FastAPI
 
 from app import settings
-from app.redis import r, ping_redis_connection
+from app.utils.redis import r, ping_redis_connection
 
 # logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

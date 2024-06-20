@@ -7,7 +7,7 @@ from app.schemas import JWTAccessToken, JWTRefreshToken, JWTToken, CredentialsSc
 from app.models import User
 from app.utils.contrib import authenticate, validate_refresh_token, reusable_oauth2, refresh_oauth2, get_current_user
 from app.utils.jwt import create_access_token, create_refresh_token
-from app.redis import r, ping_redis_connection
+from app.utils.redis import r, ping_redis_connection
 from app import settings
 from fastapi.security import OAuth2PasswordRequestForm
 
