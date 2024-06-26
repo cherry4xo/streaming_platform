@@ -45,14 +45,15 @@ async def send_confirmation_letter(to: str, user_id: UUID4, subject: str, text: 
             ).execute())
 
             if confirmation_field is not None:
-                await (pipe.delete(f"{user_id}:confirmation").execute())
+                await (pipe.delete(f"{user_id}:{confirmation_type}").execute())
             
             confirmation_field = await (pipe.hset(
                 f"{user_id}:{confirmation_type}",
                 mapping={
                     "code": digits,
                     "email": to,
-                    "time": datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S.%f")
+                    "time": datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S.%f"),
+                    "status": "sent"
                 }).execute()
             )
 

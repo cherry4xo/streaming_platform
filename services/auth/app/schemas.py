@@ -34,5 +34,9 @@ class JWTTokenPayload(BaseModel):
     token_kind: str = None
 
 
+class RefreshToken(BaseModel):
+    refresh_token: str
+
+
 class Msg(BaseModel):
     message: str = None

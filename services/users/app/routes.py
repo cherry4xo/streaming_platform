@@ -36,14 +36,14 @@ async def create_user(
     return db_user
 
 
-@router.get("/me", response_model=UserOut, status_code=200) # response_model=UserOut
+@router.get("/me/home", response_model=UserOut, status_code=200) # response_model=UserOut
 async def get_user_me(
     current_user: User = Depends(decode_jwt)
 ):
     return current_user
 
 
-@router.post("/me/change_password", status_code=204)
+@router.post("/me/change_password", status_code=200)
 async def change_password(
     change_password_in: UserChangePasswordIn,
     current_user: User = Depends(decode_jwt)
@@ -88,7 +88,7 @@ async def confirm_email_code(
 ):
     async with r.pipeline(transaction=True) as pipe:
         code_field = (await (pipe.hgetall(
-            f"{current_user}:confirmation"
+            f"{current_user.uuid}:confirmation"
         ).execute()))[0]
 
         if code_field == {}:
@@ -125,7 +125,7 @@ async def confirm_email_code(
                                  is_comfirmed=current_user.is_confirmed)
     
 
-@router.get("/password_reset/send", response_model=UserBaseResetLetterSent, status_code=200)
+@router.post("/password_reset/send", response_model=UserBaseResetLetterSent, status_code=200)
 async def password_reset_letter(
     letter_in: UserBaseResetLetterIn
 ):
@@ -199,6 +199,8 @@ async def password_reset_confirm(
                     "status": "confirmed"
             }).execute()
         )
+
+    return UserBaseResetConfirmed(email=user.email)
 
 
 @router.post("/password_reset/set_new", response_model=UserBaseResetPasswordOut, status_code=200)

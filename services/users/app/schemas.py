@@ -74,7 +74,7 @@ class UserBaseResetConfirm(BaseModel):
 
 
 class UserBaseResetConfirmed(BaseModel):
-    code: str
+    email: EmailStr
 
 
 class UserBaseResetPasswordIn(BaseModel):

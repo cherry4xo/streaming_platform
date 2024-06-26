@@ -9,7 +9,8 @@ async def upgrade(db: BaseDBAsyncClient) -> str:
     "email" VARCHAR(64),
     "password_hash" VARCHAR(255),
     "registration_date" DATE NOT NULL,
-    "is_admin" BOOL NOT NULL  DEFAULT False
+    "is_admin" BOOL NOT NULL  DEFAULT False,
+    "is_confirmed" BOOL NOT NULL  DEFAULT False
 );
 CREATE TABLE IF NOT EXISTS "aerich" (
     "id" SERIAL NOT NULL PRIMARY KEY,

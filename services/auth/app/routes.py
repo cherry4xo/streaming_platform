@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from fastapi import APIRouter, HTTPException, Depends, Security
 
-from app.schemas import JWTAccessToken, JWTRefreshToken, JWTToken, CredentialsSchema
+from app.schemas import JWTAccessToken, JWTRefreshToken, JWTToken, CredentialsSchema, RefreshToken
 from app.models import User
 from app.utils.contrib import authenticate, validate_refresh_token, reusable_oauth2, refresh_oauth2, get_current_user
 from app.utils.jwt import create_access_token, create_refresh_token
@@ -55,10 +55,18 @@ async def login_refresh_token(credentials: OAuth2PasswordRequestForm = Depends()
 
 @router.post("/refresh", response_model=JWTAccessToken)
 async def refresh_token(
-    current_user: User = Depends(validate_refresh_token)
+    token: RefreshToken
 ):
-    refresh_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    new_access_token = create_access_token(data={"user_uuid": str(current_user.uuid), "expires_delta": refresh_token_expires})
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    user = await validate_refresh_token(token=token.refresh_token)
+
+    if user is None:
+        raise HTTPException(
+            status_code=401,
+            detail="The user with uuid in token does not exist"
+        )
+
+    new_access_token = create_access_token(data={"user_uuid": str(user.uuid), "expires_delta": access_token_expires})
     return {
         "access_token": new_access_token,
         "token_type": "bearer"
