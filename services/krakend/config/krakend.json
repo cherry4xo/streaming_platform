@@ -172,6 +172,66 @@
                     "method": "POST"
                 }
             ]
+        },
+        {
+            "@comment": "Send change email code",
+            "endpoint": "/me/change_email/send",
+            "method": "POST",
+            "input_headers": [
+                "*"
+            ],
+            "input_query_strings": [
+                "*"
+            ],
+            "backend": [
+                {
+                    "host": ["http://users:8083"],
+                    "url_pattern": "/users/me/change_email/send",
+                    "method": "POST"
+                }
+            ],
+            "extra_config": {
+                "auth/signer": {
+                    "alg": "HS256",
+                    "jwk_url": "http://auth:8083/login/symmetric.json",
+                    "keys_to_sign": ["access_token", "refresh_token"],
+                    "kid": "sim2",
+                    "disable_jwk_security": true
+                },
+                "proxy": {
+                    "sequential": true
+                }
+            }
+        },
+        {
+            "@comment": "Confirm new email with code",
+            "endpoint": "/me/change_email/confirm",
+            "method": "POST",
+            "input_headers": [
+                "*"
+            ],
+            "input_query_strings": [
+                "*"
+            ],
+            "backend": [
+                {
+                    "host": ["http://users:8083"],
+                    "url_pattern": "/users/me/change_email/confirm",
+                    "method": "POST"
+                }
+            ],
+            "extra_config": {
+                "auth/signer": {
+                    "alg": "HS256",
+                    "jwk_url": "http://auth:8083/login/symmetric.json",
+                    "keys_to_sign": ["access_token", "refresh_token"],
+                    "kid": "sim2",
+                    "disable_jwk_security": true
+                },
+                "proxy": {
+                    "sequential": true
+                }
+            }
         }
     ]
 }

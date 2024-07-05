@@ -33,7 +33,8 @@ CLIENT_ID = os.getenv("CLIENT_ID", default="".join([random.choice(string.ascii_l
 LOGIN_URL = "/login/access-token"
 REFRESH_URL = "/login/refresh-token"
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 15
+# ACCESS_TOKEN_EXPIRE_MINUTES = 15 
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 14 # change in release to 15 minutes
 REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 14 # 2 weeks
 
 CORS_ORIGINS = ["*"]

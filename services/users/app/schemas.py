@@ -84,3 +84,7 @@ class UserBaseResetPasswordIn(BaseModel):
 
 class UserBaseResetPasswordOut(BaseModel):
     user_id: UUID4
+
+
+class UserBaseChangeEmailIn(BaseModel):
+    email: EmailStr

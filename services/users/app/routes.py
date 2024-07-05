@@ -7,7 +7,8 @@ from app.schemas import (UserCreate, UserOut,
                          UserChangePasswordIn, 
                          UserBaseSendConfirmCode, UserBaseConfirmCode, UserBaseConfirmed,
                          UserBaseResetLetterSent, UserBaseResetLetterIn, UserBaseResetConfirm, UserBaseResetConfirmed,
-                         UserBaseResetPasswordIn, UserBaseResetPasswordOut)
+                         UserBaseResetPasswordIn, UserBaseResetPasswordOut,
+                         UserBaseChangeEmailIn)
 from app.models import User
 from app.utils import password
 from app.utils.contrib import decode_jwt
@@ -60,7 +61,7 @@ async def change_password(
     await current_user.save()
 
 
-@router.get("/me/send_confirm_code", status_code=200)
+@router.get("/me/send_confirm_code", response_model=UserBaseSendConfirmCode, status_code=200)
 async def send_email_confirm_code(
     current_user: User = Depends(decode_jwt)
 ):
@@ -241,3 +242,65 @@ async def reset_new_password(
         await (pipe.delete(f"{user.uuid}:reset_password").execute())
 
         return UserBaseResetPasswordOut(user_id=user.uuid)
+    
+
+@router.post("/me/change_email/send", response_model=UserBaseSendConfirmCode, status_code=200,
+             description="Send confirmation code to new email")
+async def send_change_email_code(
+    data_in: UserBaseChangeEmailIn,
+    current_user: User = Depends(decode_jwt)
+):
+    if not current_user.is_confirmed:
+        raise HTTPException(
+            status_code=403,
+            detail="The current email of this user is not confirmed"
+        )
+
+    await send_confirmation_letter(to=data_in.email,
+                                   user_id=current_user.uuid,
+                                   subject="Email change confirmation code",
+                                   text="Your new email confirmation code",
+                                   confirmation_type="change")
+    
+    out = UserBaseSendConfirmCode(user_id=current_user.uuid, email=data_in.email, time=datetime.now())
+    return out
+
+
+@router.post("/me/change_email/confirm", response_model=UserBaseConfirmed, status_code=200,
+             description="Confirm new email with confirmation code")
+async def confirm_new_email(
+    data_in: UserBaseConfirmCode,
+    current_user: User = Depends(decode_jwt)
+):
+    async with r.pipeline(transaction=True) as pipe:
+        code_field = (await (pipe.hgetall(
+            f"{current_user.uuid}:change"
+        ).execute()))[0]
+
+        if code_field == {}:
+            raise HTTPException(
+                status_code=404,
+                detail="The confirmation code did not been sent"
+            )
+        
+        if code_field["code"] != data_in.code:
+            raise HTTPException(
+                status_code=422,
+                detail="Incorrect confirmation code"
+            )
+        
+        if datetime.now() - datetime.strptime(code_field["time"], '%Y-%m-%d %H:%M:%S.%f') > timedelta(seconds=settings.EMAIL_CONFIRMATION_CODE_EXPIRE_DELTA):
+            raise HTTPException(
+                status_code=410,
+                detail="Confirmation code has been expired"
+            )
+
+        await (pipe.delete(f"{current_user.uuid}:change").execute())
+        
+        current_user.email = code_field["email"]
+        current_user.is_confirmed = True
+        await current_user.save()
+
+        return UserBaseConfirmed(user_id=current_user.uuid, 
+                                 email=current_user.email, 
+                                 is_comfirmed=current_user.is_confirmed)
