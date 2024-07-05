@@ -39,3 +39,8 @@ SMTP_LOGIN = os.getenv("SMTP_LOGIN")
 SMTP_PWD = os.getenv("SMTP_PWD")
 
 EMAIL_CONFIRMATION_CODE_EXPIRE_DELTA = 60 * 15
+
+S3_KEY_ID = os.getenv("S3_KEY_ID")
+S3_SECRET_KEY = os.getenv("S3_SECRET_KEY")
+S3_REGION = os.getenv("S3_REGION")
+S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME") 
